@@ -23,3 +23,14 @@ Act 7 音频尚未到位，待补。
 
 - 剧团用的是 **免费版 QLab 5**：工程里只使用 Audio / Fade / Group / Start / Stop / Wait / Memo cue，不要加入需要付费授权的 cue 类型。
 - `Act 6_ 最后的太阳/旧版单独工程（已弃用）/` 是早期的单 Act 工程，仅作留档，演出不用。
+
+## qlab-skill/
+
+用脚本驱动 QLab 5 建工程的 Claude Code skill（AppleScript + OSC），本工程的 Act 5/6/8 cue 都是用它批量建出来的。
+
+- `SKILL.md`：踩坑总结与操作心法（QLab 5.6.3 实测）
+- `scripts/build_act_into_list.py <cfg.json>`：往指定 cue list 批量建 cue、加 fade、设编号
+- `scripts/dump_workspace.applescript <ws索引>`：回读工程里所有 cue 校对
+- `references/`：打包迁移、脚本细节
+
+装到自己机器上：把 `qlab-skill/` 复制为 `~/.claude/skills/qlab/` 即可。
