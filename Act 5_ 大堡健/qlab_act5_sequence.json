@@ -1,0 +1,27 @@
+{
+  "folder": "/Users/aaron/Documents/喜剧节/Audio/Act 5_ 大堡健",
+  "list": "Act 5:《大堡健》",
+  "prefix": "5_",
+  "fade_seconds": 3,
+  "sequence": [
+    ["audio", 1],
+    ["audio", 2],
+    ["audio", 3],
+    ["audio", 4],
+    ["audio", 5],
+    ["audio", 6],
+    ["audio", 7],
+    ["audio", 8],
+    ["audio", 9],
+    ["audio", 10],
+    ["audio", 11],
+    ["fade", 11, {}],
+    ["audio", 12],
+    ["audio", 13],
+    ["fade", 13, {}],
+    ["audio", 14],
+    ["audio", 15],
+    ["audio", 16],
+    ["audio", 17]
+  ]
+}

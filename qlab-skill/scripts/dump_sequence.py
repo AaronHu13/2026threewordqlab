@@ -84,7 +84,7 @@ for line in raw.split("\n"):
             o["secs"] = int(secs) if secs.is_integer() else secs
         if cont != "do_not_continue": o["cont"] = cont
         if suf != default_suf: o["suffix"] = suf
-        if name: o["name"] = name
+        if name and name != (f"Fade out {n} ({o.get('secs', 0):g}s)" if t == "Fade" else f"{ {'Start': 'Resume', 'Stop': 'Stop', 'Pause': 'Pause'}[t]} {n}"): o["name"] = name
         if notes: o["notes"] = notes
         seq.append([t.lower(), n, o])
     elif t == "Memo":
