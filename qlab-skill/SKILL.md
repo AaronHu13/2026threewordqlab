@@ -1,7 +1,7 @@
 ---
 name: qlab
 description: |
-  用脚本驱动 macOS 上的 QLab 5 做演出音效工程：批量把一个文件夹的音频建成 cue list、加 fade out、设 loop / continue mode、改音量、保存工程、打包迁移给别人。当用户说"帮我连 QLab""把这些音效做成一个 QLab 工程""给每个 cue 加淡出""QLab 怎么保存 / 怎么发给别人 / 换机没声音""用 OSC 控制 QLab""QLab cue 是红的"，或任何涉及 .qlab5 工程文件、cue、fade、OSC 53000 的任务时，用本 skill。沉淀自 2026-08 用 QLab 5.6.3 做「Act 6 最后的太阳」26 个 cue 的实战，里面每一条都是踩过坑换来的，能省掉几十次失败尝试。
+  用脚本驱动 macOS 上的 QLab 5 做演出音效工程：批量把一个文件夹的音频建成 cue list、加 fade out、设 loop / continue mode、改音量、保存工程、打包迁移给别人。当用户说"帮我连 QLab""把这些音效做成一个 QLab 工程""给每个 cue 加淡出""QLab 怎么保存 / 怎么发给别人 / 换机没声音""用 OSC 控制 QLab""QLab cue 是红的""把这份音乐 cue 表做成 QLab / 导出 sequence json / 汇总到总工程"，或任何涉及 .qlab5 工程文件、cue、fade、OSC 53000 的任务时，用本 skill。沉淀自 2026-08 用 QLab 5.6.3 做「Act 6 最后的太阳」26 个 cue 的实战，里面每一条都是踩过坑换来的，能省掉几十次失败尝试。
 ---
 
 # QLab 5 脚本化（qlab）
@@ -45,6 +45,12 @@ tell application "System Events" to tell process "QLab" to ¬
 **`q number` 撞号会被静默改掉**：如果工程里已有同号 cue（哪怕在别的 cue list、哪怕是待删的占位 cue），`set q number` 不报错，但 QLab 会给一个别的号（实测给了 10/13/14…）。所以要先删占位再设号，或者设完立刻读回来对一遍。
 
 `scripts/build_act_into_list.py <cfg.json>` 是往**现有工程的某个 cue list** 建整幕的正式工具（Act 5/6/8 都用它建的）：cfg 里给 `folder`、`list`、`prefix` 和显式 `sequence`，步骤类型 `audio` / `fade`（可带 `secs`、`cont`、`suffix`）/ `start` / `stop` / `memo`（免费版替代 Pause 的占位行）/ `pause`（需授权），每步可带 `name`、`notes`。它会先把占位 cue 的 q number 清空再建（避免撞号被静默改号），设完号立刻读回校验，最后删占位。Act 8 的 cfg 样例在 `Audio/Act 8_ 一幕成名2幕中无人/qlab_act8_sequence.json`。
+
+## 音乐 cue 表 → sequence json（每幕必做）
+
+剧组给的音乐 cue 表都是纯文字（「26 搜捕队 —— 与 27 无缝衔接」「37 革命的大炮 —— 暂停后继续」…）。**先把它翻译成该幕音频文件夹里的 `qlab_actN_sequence.json`，再用它建 cue**；文字描述 → 步骤的对照表和完整格式在 `references/sequence_json.md`。
+
+**每一幕做完 QLab 之后，不管 cue 是脚本建的还是手工建/改的，都要保证文件夹里的 json 和 cue list 一致**：`python3 scripts/dump_sequence.py "<list 名>" "<prefix>" "<音频文件夹>" "<音频文件夹>/qlab_actN_sequence.json"` 会把前台工程里那个 cue list 反向导出成同格式 json（Act 8 实测 67 步和手写版一模一样）。这份 json 就是把「某一幕的独立工程」汇总进「戏剧节总工程」的载体：打开总工程，对着 json 跑一遍 `build_act_into_list.py`，不用手工跨工程复制 cue。json 是文本，能 git diff / 合并；`.qlab5` 不能，所以协作时以 json 为准。
 
 `scripts/build_workspace.py` 是一个能直接改的模板：扫文件夹里的 `Cue<N>：xxx.mp3` → 每个建 Audio cue → 紧跟一个 1 秒 Fade out cue，支持 loop 和交叠序列。**改 `FOLDER` 和 `main()` 里的编排就能用。**
 

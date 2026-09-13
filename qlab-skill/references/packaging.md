@@ -52,3 +52,5 @@ end tell
 2. **每幕一个独立 .qlab5**（用 `scripts/split_workspace.py` 从总工程拆出来），放在各幕自己的 `Act N_ 剧名/` 文件夹里，谁负责哪幕就只改哪个文件，互不冲突。
 3. 总工程只由一个人（或演出前一次）合并：同时打开总工程和单幕工程，在单幕工程的 cue list 里全选 cue（⌘A）→ ⌘C，到总工程对应 list 里 ⌘V。QLab 5 没有"导入 cue list"功能，复制粘贴是唯一的合并方式；粘贴过来的 cue 保留编号、名字、file target、fade 目标（目标 cue 在同一批粘贴里时会一起重定向）。
 4. 编排配置（如 `qlab_act8_sequence.json`）也入库，最坏情况可以用 `build_act_into_list.py` 一键重建，不用手工。
+
+合并的更省事的办法：不复制 cue，而是让每幕文件夹里的 `qlab_actN_sequence.json` 保持最新（`scripts/dump_sequence.py` 导出），汇总时在总工程里跑 `build_act_into_list.py` 重建那一幕。详见 `references/sequence_json.md`。
