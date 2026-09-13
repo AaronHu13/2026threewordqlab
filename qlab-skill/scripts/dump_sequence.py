@@ -100,6 +100,7 @@ fades = [s[2].get("secs") for s in seq if s[0] == "fade"]
 fade_default = max(set(fades), key=fades.count) if fades else 3
 for s in seq:
     if s[0] == "fade" and s[2].get("secs") == fade_default: s[2].pop("secs")
+seq = [s[:2] if len(s) > 2 and not s[2] else s for s in seq]   # drop empty option dicts
 
 missing = [f for f in files.values() if not os.path.exists(os.path.join(FOLDER, f))]
 if missing: print(f"warn: {len(missing)} audio files not in {FOLDER}: {missing[:3]}…", file=sys.stderr)
