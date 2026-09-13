@@ -1,0 +1,11 @@
+{
+ "_comment": "Act 4《Cabaret新编AI》。doc_id 填实际文档 id（勿提交公开仓库）。cues 由 plan 生成后人工审。",
+ "doc_id": "<GOOGLE_DOC_ID>",
+ "mics": {"8": "阿龙", "9": "CEO", "10": "Xuannie", "11": "妈妈", "12": "黄正花", "13": "Maggie", "14": "大智"},
+ "aliases": {"8": ["阿龙"], "9": ["CEO", "Ceo", "ceo", "阿杜"], "10": ["Xuannie", "xuannie", "luxuan", "璐萱"], "11": ["妈妈", "妈"]},
+ "ignore": ["合", "众人", "伴舞", "Backstage", "背景音", "画外音", "小b", "b", "sally", "导演助理"],
+ "fixes": {
+  "（mic on 8，mic off 10）": "（mic on 9，mic off 8、10）",
+  "（keep mic on 8,9，mic off 10-14）（LQ43": "（mic on 8，keep 9，mic off 10-14）（LQ43"
+ }
+}
