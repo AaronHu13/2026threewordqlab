@@ -40,6 +40,8 @@ tell application "System Events" to tell process "QLab" to ¬
 
 **`q number` 撞号会被静默改掉**：如果工程里已有同号 cue（哪怕在别的 cue list、哪怕是待删的占位 cue），`set q number` 不报错，但 QLab 会给一个别的号（实测给了 10/13/14…）。所以要先删占位再设号，或者设完立刻读回来对一遍。
 
+`scripts/build_act_into_list.py <cfg.json>` 是往**现有工程的某个 cue list** 建整幕的正式工具（Act 5/6/8 都用它建的）：cfg 里给 `folder`、`list`、`prefix` 和显式 `sequence`，步骤类型 `audio` / `fade`（可带 `secs`、`cont`、`suffix`）/ `start` / `stop` / `memo`（免费版替代 Pause 的占位行）/ `pause`（需授权），每步可带 `name`、`notes`。它会先把占位 cue 的 q number 清空再建（避免撞号被静默改号），设完号立刻读回校验，最后删占位。Act 8 的 cfg 样例在 `Audio/Act 8_ 一幕成名2幕中无人/qlab_act8_sequence.json`。
+
 `scripts/build_workspace.py` 是一个能直接改的模板：扫文件夹里的 `Cue<N>：xxx.mp3` → 每个建 Audio cue → 紧跟一个 1 秒 Fade out cue，支持 loop 和交叠序列。**改 `FOLDER` 和 `main()` 里的编排就能用。**
 
 ## Fade：cue 内置淡出的长度改不了
