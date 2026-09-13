@@ -34,3 +34,15 @@ Act 7 音频尚未到位，待补。
 - `references/`：打包迁移、脚本细节
 
 装到自己机器上：把 `qlab-skill/` 复制为 `~/.claude/skills/qlab/` 即可。
+
+## keynote-skill/
+
+用脚本给演出 Keynote 加音效 / 改动效的 Claude Code skill，沉淀自给「2026喜剧节背景.key」第 15 页加音效的实战（2026-09-12）。
+
+- `SKILL.md`：踩坑总结（AppleScript 建音频会死锁、System Events 点击在 Keynote 里无效、新插音频默认要点一下才播、GIF 默认循环）
+- `scripts/insert_audio.applescript <页号> <音频路径>`：走「插入 › 选取…」把音频插到指定页
+- `scripts/click.js x y [x y ...]`：CGEvent 真鼠标点击，用来点检查器里的勾（如取消 Start audio on click）
+- `scripts/media_info.applescript <页号>`：列出某页的音频 / 视频 / GIF 及其循环、音量
+- `scripts/inspector_dump.applescript [tab]`：dump 检查器控件核对改动
+
+装到自己机器上：把 `keynote-skill/` 复制为 `~/.claude/skills/keynote/` 即可。
