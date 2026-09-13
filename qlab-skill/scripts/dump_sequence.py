@@ -86,7 +86,7 @@ for line in raw.split("\n"):
         if suf != default_suf: o["suffix"] = suf
         if name and name != (f"Fade out {n} ({o.get('secs', 0):g}s)" if t == "Fade" else f"{ {'Start': 'Resume', 'Stop': 'Stop', 'Pause': 'Pause'}[t]} {n}"): o["name"] = name
         if notes: o["notes"] = notes
-        seq.append([t.lower(), n, o])
+        seq.append([t.lower(), n, o] if o else [t.lower(), n])
     elif t == "Memo":
         n, suf = split_num(q)
         if suf != "M": o["suffix"] = suf
