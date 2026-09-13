@@ -16,6 +16,8 @@ Act 6_ 最后的太阳/            # cue 编号 6_N / 6_NF，28 个 cue
 Act 7_ 晚安承天寺/            # 音频尚未到位，工程里是模板占位
 Act 8_ 一幕成名2幕中无人/     # cue 编号 8_N，67 个 cue（2026-09-13 按新音频包重建）
                               #   qlab_act8_sequence.json 是本幕的编排配置，可一键重建
+报幕/                         # 8 个剧目的报幕音效：原录音、公用 BGM、合成成品（见其 README）
+skills/                       # 做这套工程用到的 Claude Code skills（qlab / keynote / intro-mix）
 ```
 
 Act 1–4、7 的音频还没进仓库，对应 cue 目前是红色 missing，属正常。
@@ -24,7 +26,7 @@ Act 1–4、7 的音频还没进仓库，对应 cue 目前是红色 missing，�
 
 `.qlab5` 是 Apple 二进制 plist，**git 无法合并**。两个人同时改了 `喜剧节2026.qlab5` 再 push，冲突时只能整个文件二选一，输的那方改动全丢。所以：
 
-1. **各幕独立工程** `Act N_ 剧名/Act N_ 剧名.qlab5` 只含本幕那一个 cue list，是从总工程拆出来的（`qlab-skill/scripts/split_workspace.py`）。**谁负责哪幕，就只改哪幕的独立工程**，互不冲突。
+1. **各幕独立工程** `Act N_ 剧名/Act N_ 剧名.qlab5` 只含本幕那一个 cue list，是从总工程拆出来的（`skills/qlab/scripts/split_workspace.py`）。**谁负责哪幕，就只改哪幕的独立工程**，互不冲突。
 2. **总工程由一个人合并**（演出前统一做一次）：同时打开总工程和某幕的独立工程，在独立工程的 cue list 里 ⌘A 全选 → ⌘C，到总工程对应 list 里 ⌘V。QLab 5 没有"导入 cue list"功能，跨工程复制粘贴是唯一的合并方式；粘贴会保留编号、名字、音频指向和 fade 目标。
 3. 改了总工程里某幕的内容，记得**同步改该幕的独立工程**（或重跑一次拆分脚本），否则两边会不一致。
 4. `.gitattributes` 把 `*.qlab5` 标成 binary：git 不再尝试文本合并，冲突会明确报出来，而不是产生半损坏的文件。真撞了冲突就 `git checkout --theirs/--ours` 选一边，再用复制粘贴把另一边的改动补回来。
@@ -43,26 +45,33 @@ Act 1–4、7 的音频还没进仓库，对应 cue 目前是红色 missing，�
 - 「暂停再续播」在免费版的做法：到点按键盘 `[`（Pause All）暂停，列表里的 Memo 行只是对齐流程占位，之后 GO 那条 Start cue（如 `8_1R`、`8_37R`）从暂停点续播。
 - `Act 6_ 最后的太阳/旧版单独工程（已弃用）/` 是早期的单 Act 工程，仅作留档，演出不用。
 
-## qlab-skill/
+## skills/
 
-用脚本驱动 QLab 5 建工程的 Claude Code skill（AppleScript + OSC），本工程的 Act 5/6/8 cue 都是用它批量建出来的。
+做这套工程用到的三个 Claude Code skill，每个子文件夹就是一个 skill。装到自己机器上：把 `skills/<名字>/` 复制为 `~/.claude/skills/<名字>/` 即可（Aaron 机器上的 `~/.claude/skills/` 与这里保持同步，改了任一边就 rsync 过去）。
+
+### skills/qlab/
+
+用脚本驱动 QLab 5 建工程（AppleScript + OSC），本工程的 Act 5/6/8 cue 都是用它批量建出来的。
 
 - `SKILL.md`：踩坑总结与操作心法（QLab 5.6.3 实测）
-- `scripts/build_act_into_list.py <cfg.json>`：往指定 cue list 批量建 cue、加 fade、设编号
+- `scripts/build_act_into_list.py <qlab_actN_sequence.json>`：按 json 编排往指定 cue list 批量建 cue、加 fade、设编号（幂等，可反复跑）
+- `scripts/dump_sequence.py "<list 名>" <prefix> <音频文件夹> [out.json]`：反向把 QLab 里的 cue list 导出成 json，json 是多人协作时的合并单位
+- `scripts/split_workspace.py <总工程> <输出目录> ['Act \d']`：把总工程拆成每幕一个独立 .qlab5
 - `scripts/dump_workspace.applescript <ws索引>`：回读工程里所有 cue 校对
-- `scripts/split_workspace.py <总工程> <输出目录> ['Act \d']`：把总工程拆成每幕一个独立 .qlab5（自动处理删 cue list 的确认框）
-- `references/`：打包迁移、脚本细节
+- `references/sequence_json.md`：文字版音乐 cue 表 → json 的翻译规则；`packaging.md`、`scripting.md`：打包迁移、脚本细节
 
-装到自己机器上：把 `qlab-skill/` 复制为 `~/.claude/skills/qlab/` 即可。
+### skills/keynote/
 
-## keynote-skill/
-
-用脚本给演出 Keynote 加音效 / 改动效的 Claude Code skill，沉淀自给「2026喜剧节背景.key」第 15 页加音效的实战（2026-09-12）。
+用脚本给演出 Keynote 加音效 / 改动效，沉淀自给「2026喜剧节背景.key」第 15 页加音效的实战（2026-09-12）。
 
 - `SKILL.md`：踩坑总结（AppleScript 建音频会死锁、System Events 点击在 Keynote 里无效、新插音频默认要点一下才播、GIF 默认循环）
 - `scripts/insert_audio.applescript <页号> <音频路径>`：走「插入 › 选取…」把音频插到指定页
-- `scripts/click.js x y [x y ...]`：CGEvent 真鼠标点击，用来点检查器里的勾（如取消 Start audio on click）
-- `scripts/media_info.applescript <页号>`：列出某页的音频 / 视频 / GIF 及其循环、音量
-- `scripts/inspector_dump.applescript [tab]`：dump 检查器控件核对改动
+- `scripts/click.js x y [x y ...]`：CGEvent 真鼠标点击，用来点检查器里的勾
+- `scripts/media_info.applescript <页号>`、`scripts/inspector_dump.applescript [tab]`：核对页内媒体与检查器
 
-装到自己机器上：把 `keynote-skill/` 复制为 `~/.claude/skills/keynote/` 即可。
+### skills/intro-mix/
+
+把公用 BGM 和各剧目的报幕人声合成节目 intro，`报幕/2026 报幕audio/合成/` 里的 8 条就是它做的（2026-09-13）。
+
+- `SKILL.md`：做法（拆 2025 成品反推的参数：BGM 压 7 dB、人声 7.00 s 准点进、限 −1 dBTP）、校对步骤、ffmpeg 坑
+- `scripts/mix_intro.py <bgm> <人声|文件夹> <out>`：自动检测人声开口点切掉前后空白、对齐、混合、逐条打印响度
