@@ -42,3 +42,13 @@ end tell
 ```
 
 九成是因为忘了做上面第 1 步（Copy media files into project folder），素材还留在原机的桌面上。
+
+
+## 多人协作 / git 备份
+
+`.qlab5` 是 Apple binary plist（NSKeyedArchiver），**git 无法三方合并**：两个人同时改了同一个总工程再 push，冲突只能整个文件二选一，输的那方改动全丢。对策：
+
+1. 仓库放 `.gitattributes`：`*.qlab5 binary`，让 git 从不尝试文本合并，冲突时明确报"二选一"。
+2. **每幕一个独立 .qlab5**（用 `scripts/split_workspace.py` 从总工程拆出来），放在各幕自己的 `Act N_ 剧名/` 文件夹里，谁负责哪幕就只改哪个文件，互不冲突。
+3. 总工程只由一个人（或演出前一次）合并：同时打开总工程和单幕工程，在单幕工程的 cue list 里全选 cue（⌘A）→ ⌘C，到总工程对应 list 里 ⌘V。QLab 5 没有"导入 cue list"功能，复制粘贴是唯一的合并方式；粘贴过来的 cue 保留编号、名字、file target、fade 目标（目标 cue 在同一批粘贴里时会一起重定向）。
+4. 编排配置（如 `qlab_act8_sequence.json`）也入库，最坏情况可以用 `build_act_into_list.py` 一键重建，不用手工。

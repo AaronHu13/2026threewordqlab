@@ -34,6 +34,10 @@ tell application "System Events" to tell process "QLab" to ¬
 - 续播用 **Start cue 打在暂停中的目标上，会从暂停点继续**（实测暂停在 3.03s，Start 后 2s 走到 5.05s），所以 cue list 里可以保留一条 Start cue 当"续播"的 GO。
 - "A 停、B 同时起"用 Stop cue + `continue mode` = `auto_continue` 紧跟 B。
 
+**`delete` 一个 cue list 必弹确认框**（"Permanently delete Cue List …?"，空 list 也弹），AppleEvent 会卡到 -1712 超时，重试几次就叠出几个对话框。`delete every cue of cl` 不弹，只有删 list 本身弹。要脚本化删 list 就开一个后台线程用 JXA 轮询 QLab 的 AXDialog 窗口点 "Delete"（`scripts/split_workspace.py` 里有现成实现）。另外 **刚 `open` 完工程的头几秒 AppleEvent 也会 -1712**，所有 osascript 调用都要带重试。
+
+**一个总工程拆成每幕一个 .qlab5**（给多人协作/git 备份用）：`scripts/split_workspace.py <总工程> <输出根目录> ['Act \d']`，每个 cue list 复制一份总工程、删掉其他 list、另存到 `Act N_ 剧名/Act N_ 剧名.qlab5`。另存后的副本会拿到新的 workspace unique id，能和总工程同时打开。`.qlab5` 是 binary plist，git 合不了，仓库里要放 `.gitattributes`：`*.qlab5 binary`。
+
 **UI 脚本别点带子菜单的菜单项**：`click menu item "Workspace Settings" of menu 1 of menu bar item "File"` 这种带子菜单的项，AX 会把子菜单撑开并进入 NSMenuTrackingSession，QLab 主线程卡在菜单循环里，AppleEvent 全部 -1712 超时，System Events 看不到任何窗口，Escape（System Events 和 CGEvent 两种都试过）都救不回来，只能 `kill -9` 重开。先 `sample QLab 1 | grep NSMenuTrackingSession` 确诊。工作区设置改用 plistlib 读 .qlab5 或直接 AppleScript 属性。
 
 建完就能正常设属性了，可用的有：`file target`（POSIX file）、`q number`、`q name`、`duration`、`cue target`、`stop target when done`、`infinite loop`、`continue mode`（`do_not_continue` / `auto_continue` / `auto_follow`）、以及命令 `setLevel <cue> row 0 column 0 db <n>`（**db 到 −60 就是静音，−120 会被 floor**）。
