@@ -1,0 +1,14 @@
+{
+  "folder": "/Users/zhabro/Documents/GitHub/2026threewordqlab/Act 1_ 回来了",
+  "list": "Act 1:《回来了》",
+  "prefix": "1_",
+  "fade_seconds": 3,
+  "sequence": [
+    ["audio", 1],
+    ["audio", 2],
+    ["audio", 3],
+    ["audio", 4],
+    ["audio", 5],
+    ["audio", 6]
+  ]
+}

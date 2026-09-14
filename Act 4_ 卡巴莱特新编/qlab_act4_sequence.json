@@ -1,0 +1,20 @@
+{
+  "folder": "/Users/zhabro/Documents/GitHub/2026threewordqlab/Act 4_ 卡巴莱特新编",
+  "list": "Act 4:《卡巴莱特新编》",
+  "prefix": "4_",
+  "fade_seconds": 3,
+  "sequence": [
+    ["audio", 1],
+    ["audio", 2],
+    ["audio", 3],
+    ["audio", 4],
+    ["audio", 5],
+    ["audio", 6],
+    ["audio", 7],
+    ["audio", 8],
+    ["audio", 9],
+    ["audio", 10],
+    ["audio", 11],
+    ["audio", 12]
+  ]
+}

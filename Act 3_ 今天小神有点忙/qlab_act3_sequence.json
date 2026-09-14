@@ -1,0 +1,25 @@
+{
+  "folder": "/Users/zhabro/Documents/GitHub/2026threewordqlab/Act 3_ 今天小神有点忙",
+  "list": "Act 3: 《今天小神有点忙》",
+  "prefix": "3_",
+  "fade_seconds": 3,
+  "sequence": [
+    ["audio", 1],
+    ["audio", 2],
+    ["audio", 3],
+    ["audio", 4],
+    ["audio", 5],
+    ["audio", 6],
+    ["audio", 7],
+    ["audio", 8],
+    ["audio", 9],
+    ["audio", 10],
+    ["audio", 11],
+    ["audio", 12],
+    ["audio", 13],
+    ["audio", 14],
+    ["audio", 15],
+    ["audio", 16],
+    ["audio", 17]
+  ]
+}
