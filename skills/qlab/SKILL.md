@@ -46,6 +46,10 @@ tell application "System Events" to tell process "QLab" to ¬
 
 `scripts/build_act_into_list.py <cfg.json>` 是往**现有工程的某个 cue list** 建整幕的正式工具（Act 5/6/8 都用它建的）：cfg 里给 `folder`、`list`、`prefix` 和显式 `sequence`，步骤类型 `audio` / `fade`（可带 `secs`、`cont`、`suffix`）/ `start` / `stop` / `memo`（免费版替代 Pause 的占位行）/ `pause`（需授权），每步可带 `name`、`notes`。它会先把占位 cue 的 q number 清空再建（避免撞号被静默改号），设完号立刻读回校验，最后删占位。Act 8 的 cfg 样例在 `Audio/Act 8_ 一幕成名2幕中无人/qlab_act8_sequence.json`。
 
+## json ↔ QLab 互转（协作者从这里开始）
+
+每幕的真相是文件夹里的 `qlab_actN_sequence.json`，`.qlab5` 是它的产物。三条命令：`build_act_into_list.py <json>`（json → 前台工程的同名 list，幂等）、`dump_sequence.py <list> <prefix> <folder> <out.json>`（QLab → json）、`verify_sequence.py --all <仓库根>`（diff 两边，提交前对总工程和每幕独立工程各跑一次）。改完总工程用 `split_workspace.py` 拆出独立工程。**完整操作手册、环境授权、常见报错见 `references/json_qlab_workflow.md`**，把它发给协作者就够了。
+
 ## 音乐 cue 表 → sequence json（每幕必做）
 
 剧组给的音乐 cue 表都是纯文字（「26 搜捕队 —— 与 27 无缝衔接」「37 革命的大炮 —— 暂停后继续」…）。**先把它翻译成该幕音频文件夹里的 `qlab_actN_sequence.json`，再用它建 cue**；文字描述 → 步骤的对照表和完整格式在 `references/sequence_json.md`。

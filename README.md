@@ -48,6 +48,15 @@ Pre-show / Intermission / Post-show 三个 list 里各有一条旧占位 cue，�
 
 独立工程另存时 QLab 会给它新的 workspace ID，所以可以和总工程同时打开。
 
+## 改 cue 的标准流程
+
+1. `git pull`，改该幕的 `qlab_actN_sequence.json`（格式见 `skills/qlab/references/sequence_json.md`）。
+2. 打开 `喜剧节2026.qlab5`，`python3 skills/qlab/scripts/build_act_into_list.py "<该幕文件夹>/qlab_actN_sequence.json"`，⌘S 保存。
+3. `python3 skills/qlab/scripts/split_workspace.py "$PWD/喜剧节2026.qlab5" "$PWD" 'Act N'` 拆出该幕独立工程。
+4. `python3 skills/qlab/scripts/verify_sequence.py --all .` 全 ✓ 后提交 json + 两个 .qlab5。
+
+在 QLab 里手工改了的话，反过来先 `dump_sequence.py` 导出 json 再走 3、4。细节和报错见 `skills/qlab/references/json_qlab_workflow.md`。
+
 ## 使用方法
 
 1. 整个仓库 clone 或下载 zip 到任意位置，**保持文件夹结构不变**。
@@ -69,8 +78,10 @@ Pre-show / Intermission / Post-show 三个 list 里各有一条旧占位 cue，�
 用脚本驱动 QLab 5 建工程（AppleScript + OSC），本工程的 Act 5/6/8 cue 都是用它批量建出来的。
 
 - `SKILL.md`：踩坑总结与操作心法（QLab 5.6.3 实测）
+- **`references/json_qlab_workflow.md`：json ↔ QLab 互转手册（环境授权、三条命令、独立工程与总工程的关系、常见报错）。协作者先读这个。**
 - `scripts/build_act_into_list.py <qlab_actN_sequence.json>`：按 json 编排往指定 cue list 批量建 cue、加 fade、设编号（幂等，可反复跑）
 - `scripts/dump_sequence.py "<list 名>" <prefix> <音频文件夹> [out.json]`：反向把 QLab 里的 cue list 导出成 json，json 是多人协作时的合并单位
+- `scripts/verify_sequence.py --all <仓库根>`：校验前台工程里每幕 cue list 与 json 一致，提交前必跑（总工程、各幕独立工程各一次）
 - `scripts/split_workspace.py <总工程> <输出目录> ['Act \d']`：把总工程拆成每幕一个独立 .qlab5
 - `scripts/dump_workspace.applescript <ws索引>`：回读工程里所有 cue 校对
 - `references/sequence_json.md`：文字版音乐 cue 表 → json 的翻译规则；`packaging.md`、`scripting.md`：打包迁移、脚本细节
