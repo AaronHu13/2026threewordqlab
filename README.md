@@ -12,7 +12,7 @@ Act 2_ 这个童话不对劲/
 Act 3_ 今天小神有点忙/
 Act 4_ 卡巴莱特新编/
 Act 5_ 大堡健/                # cue 编号 5_N，19 个 cue
-Act 6_ 最后的太阳/            # cue 编号 6_N / 6_NF，28 个 cue
+Act 6_ 最后的太阳/            # cue 编号 6_N / 6_NF / 6_ND(压低不停)，34 个 cue（2026-09-15 按新音频包+requirements.txt 重建）
 Act 7_ 晚安承天寺/            # 音频尚未到位，工程里是模板占位
 Act 8_ 一幕成名2幕中无人/     # cue 编号 8_N，67 个 cue（2026-09-13 按新音频包重建）
                               #   qlab_act8_sequence.json 是本幕的编排配置，可一键重建

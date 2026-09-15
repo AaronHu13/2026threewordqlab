@@ -9,7 +9,8 @@ qlab_actN_sequence.json that can rebuild the same list inside the festival-level
 
 Mapping (q number = <prefix><N><suffix>):
   Audio            -> ["audio", N, {name, notes, cont?, level?}]  (level = main fader dB, omitted if 0)
-  Fade             -> ["fade", N_of_target, {secs, cont, suffix, name, notes}]
+  Fade             -> ["fade", N_of_target, {secs, cont, suffix, name, notes, level?, stop?}]
+                      (level = fade target dB, omitted when -120 / stop = false when the fade only ducks)
   Start/Stop/Pause -> ["start"/"stop"/"pause", N_of_target, {cont, suffix, name, notes}]
   Memo             -> ["memo", N, {suffix, name, notes}]          (N parsed from its own q number)
 Audio cue names equal to the file basename are omitted (the builder regenerates them). Only
@@ -40,6 +41,7 @@ raw = osa(f'''set cl to first cue list whose q name is "{esc(LIST)}"
       set nt to notes of c
     end try
     set lvl to ""
+    set stp to ""
     if t is "Audio" then
       try
         set tgt to POSIX path of (file target of c as alias)
@@ -51,9 +53,15 @@ raw = osa(f'''set cl to first cue list whose q name is "{esc(LIST)}"
       try
         set tgt to q number of (cue target of c)
       end try
-      if t is "Fade" then set dur to duration of c as text
+      if t is "Fade" then
+        set dur to duration of c as text
+        try
+          set lvl to (getLevel c row 0 column 0) as text
+        end try
+        set stp to (stop target when done of c) as text
+      end if
     end if
-    set out to out & t & "{SEP}" & (q number of c) & "{SEP}" & (q name of c) & "{SEP}" & cont & "{SEP}" & tgt & "{SEP}" & dur & "{SEP}" & nt & "{SEP}" & lvl & linefeed
+    set out to out & t & "{SEP}" & (q number of c) & "{SEP}" & (q name of c) & "{SEP}" & cont & "{SEP}" & tgt & "{SEP}" & dur & "{SEP}" & nt & "{SEP}" & lvl & "{SEP}" & stp & linefeed
   end repeat
   return out''')
 
@@ -66,7 +74,7 @@ def split_num(q):
 seq, files = [], {}
 for line in raw.split("\n"):
     if not line.strip(): continue
-    t, q, name, cont, tgt, dur, notes, lvl = line.split(SEP)
+    t, q, name, cont, tgt, dur, notes, lvl, stp = line.split(SEP)
     notes = notes.replace("\r", "\n")
     o = {}
     if t == "Audio":
@@ -86,12 +94,18 @@ for line in raw.split("\n"):
             tn, _ = split_num(tgt)
             if tn != n: print(f"warn: {q} targets {tgt}, number mismatch; using target", file=sys.stderr); n = tn
         default_suf = {"Fade": "F", "Start": "R", "Stop": "S", "Pause": "P"}[t]
+        stop, level = True, -120.0
         if t == "Fade":
             secs = float(dur.replace(",", "."))
             o["secs"] = int(secs) if secs.is_integer() else secs
+            stop = stp.lower() != "false"
+            if lvl: level = round(float(lvl.replace(",", ".")), 2)
+            if level > -59.9: o["level"] = level   # QLab floors -120 to -60 = silence; omit
+            if not stop: o["stop"] = False
         if cont != "do_not_continue": o["cont"] = cont
         if suf != default_suf: o["suffix"] = suf
-        if name and name != (f"Fade out {n} ({o.get('secs', 0):g}s)" if t == "Fade" else f"{ {'Start': 'Resume', 'Stop': 'Stop', 'Pause': 'Pause'}[t]} {n}"): o["name"] = name
+        default_name = (f"Fade out {n} ({o.get('secs', 0):g}s)" if stop else f"Fade {n} to {level:g}dB ({o.get('secs', 0):g}s)") if t == "Fade" else f"{ {'Start': 'Resume', 'Stop': 'Stop', 'Pause': 'Pause'}[t]} {n}"
+        if name and name != default_name: o["name"] = name
         if notes: o["notes"] = notes
         seq.append([t.lower(), n, o] if o else [t.lower(), n])
     elif t == "Memo":

@@ -23,7 +23,7 @@
 | 类型 | 生成的 cue | q number | 可选参数 |
 |---|---|---|---|
 | `audio` | Audio cue，文件 = folder 里编号 N 的那个 | `<prefix>N` | `name`（默认文件名）、`notes`、`cont`、`level`（主推子 dB，默认 0） |
-| `fade` | Fade cue，目标 `<prefix>N`，淡到 −120 dB 并 stop target when done | `<prefix>N` + `suffix`（默认 `F`） | `secs`（默认 fade_seconds）、`cont`、`suffix`、`name`、`notes` |
+| `fade` | Fade cue，目标 `<prefix>N`，默认淡到 −120 dB 并 stop target when done | `<prefix>N` + `suffix`（默认 `F`） | `secs`（默认 fade_seconds）、`cont`、`suffix`、`name`、`notes`、`level`（目标 dB，默认 −120）、`stop`（默认 true；`false` = 只压低不停） |
 | `start` | Start cue，目标 `<prefix>N`（暂停后续播） | `<prefix>N` + `suffix`（默认 `R`） | `cont`、`suffix`、`name`、`notes` |
 | `stop` | Stop cue | `<prefix>N` + `suffix`（默认 `S`） | 同上 |
 | `memo` | Memo cue，GO 无动作，纯占位 | `<prefix>N` + `suffix`（默认 `M`） | `suffix`、`name`、`notes` |
@@ -46,6 +46,7 @@
 | 与 X、Y 重叠 | `["audio", N, {"notes": "与 X、Y 重叠"}]`, `["audio", X]`, `["audio", Y]`, 需要停 N 时再 `["fade", N]` | 什么都不做就是重叠，写进 notes 提醒 |
 | 循环 | `["audio", N, ...]` + 建完手动 `set infinite loop`，或用 `loops` 字段 | 循环的 cue 只能靠 Fade cue 停 |
 | 描述互相矛盾（既说无缝衔接又说手动停） | 按无缝衔接做，再补一条 `["fade", N, {"suffix": "F2", "name": "手动停 N（备用，通常无动作）"}]` | 保住 GO 次数一致，并在交付时向用户点出这处歧义 |
+| 播放中把音量压低 X%（音乐不停） | `["fade", N, {"suffix": "D", "level": 20*log10(1-X/100), "stop": false, "secs": 2}]` | 30% → `-3.1`，35% → `-3.7`，40% → `-4.4`。`stop: false` 让 Fade 只改音量不停 cue；后面照常再放一条 `["fade", N]` 手动停。要「B 起时 A 自动压低」就给 B 的 audio 加 `cont: auto_continue`，紧跟这条 duck fade（Act 6 的 6_19 → 6_18D） |
 | 音量调到 X%（百分比） | `["audio", N, {"level": 20*log10(X/100)}]` | `level` 是主推子 dB，百分比是线性振幅：150% → `20*log10(1.5) ≈ 3.5`，50% → `20*log10(0.5) ≈ -6.0`。`dump_sequence.py` 会把手动在 QLab 里调过的 level 原样导出回 json，所以改完记得导出一次，别让下次重建把它冲掉 |
 
 其他约定：

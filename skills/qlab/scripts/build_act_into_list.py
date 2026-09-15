@@ -10,6 +10,7 @@ cfg json:
      ["audio", 1, {"name": "...", "notes": "...", "level": 3.5}],  # level = main fader dB (default 0)
      ["fade", 2],                           # Fade out (default secs) -> <prefix>2F
      ["fade", 2, {"secs": 1, "cont": "auto_continue", "suffix": "F", "name": "...", "notes": "..."}],
+     ["fade", 2, {"suffix": "D", "level": -3.7, "stop": false, "secs": 2}],  # duck to -3.7dB, keep playing
      ["start", 37, {"cont": "do_not_continue", "name": "..."}],   # -> <prefix>37R
      ["stop", 37, {"cont": "auto_continue"}],                    # -> <prefix>37S
      ["pause", 37],                         # -> <prefix>37P  (needs a QLab license!)
@@ -88,16 +89,20 @@ def make_audio(n, fname, o):
 
 def make_fade(n, target, o):
     secs = o.get("secs", FADES.get(n, FADE_DEFAULT)); cont = o.get("cont", "do_not_continue")
+    level = float(o.get("level", -120.0)); stop = bool(o.get("stop", True))   # level: target dB; stop=false = duck only
     number = f"{PREFIX}{n}{o.get('suffix', 'F')}"
-    name = o.get("name") or f"Fade out {n} ({secs:g}s)"
+    name = o.get("name") or (f"Fade out {n} ({secs:g}s)" if stop else f"Fade {n} to {level:g}dB ({secs:g}s)")
     uid = new_cue("Fade")
     ws(f'''set f to cue id "{uid}"
       set cue target of f to cue id "{target}"
       set duration of f to {secs}
-      set stop target when done of f to true
-      setLevel f row 0 column 0 db -120.0''')
+      set stop target when done of f to {"true" if stop else "false"}
+      setLevel f row 0 column 0 db {level}''')
     set_common(uid, number, name, cont, o.get("notes"))
-    print(f"  fade  {number} -> {n}, {secs:g}s [{cont}]"); return uid
+    if not stop or level > -60:
+        got = float(ws(f'get getLevel (cue id "{uid}") row 0 column 0'))
+        if abs(got - level) > 0.05: raise RuntimeError(f"fade level mismatch on {number}: wanted {level}dB, got {got}dB")
+    print(f"  fade  {number} -> {n}, {secs:g}s to {level:g}dB{'' if stop else ' (no stop)'} [{cont}]"); return uid
 
 CTRL = {"pause": ("Pause", "P", "Pause"), "start": ("Start", "R", "Resume"), "stop": ("Stop", "S", "Stop")}
 def make_ctrl(kind, n, target, o):
