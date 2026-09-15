@@ -8,7 +8,8 @@ script OR edited by hand in the per-act workspace) so the act folder always carr
 qlab_actN_sequence.json that can rebuild the same list inside the festival-level workspace.
 
 Mapping (q number = <prefix><N><suffix>):
-  Audio            -> ["audio", N, {name, notes, cont?, level?}]  (level = main fader dB, omitted if 0)
+  Audio            -> ["audio", N, {name, notes, cont?, level?, file?}]  (level = main fader dB, omitted if 0;
+                      file = path relative to folder, only when the file is not "<N> xxx" in the folder itself)
   Fade             -> ["fade", N_of_target, {secs, cont, suffix, name, notes, level?, stop?}]
                       (level = fade target dB, omitted when -120 / stop = false when the fade only ducks)
   Start/Stop/Pause -> ["start"/"stop"/"pause", N_of_target, {cont, suffix, name, notes}]
@@ -20,6 +21,8 @@ import json, os, re, subprocess, sys
 
 LIST, PREFIX, FOLDER = sys.argv[1], sys.argv[2], sys.argv[3]
 OUT = sys.argv[4] if len(sys.argv) > 4 else None
+# FOLDER may be relative ("." = the act folder holding out.json); it is written to the json as given
+FOLDER_ABS = FOLDER if os.path.isabs(FOLDER) else os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(OUT)) if OUT else os.getcwd(), FOLDER))
 SEP = "\x1f"
 
 def osa(s):
@@ -80,7 +83,10 @@ for line in raw.split("\n"):
     if t == "Audio":
         n, suf = split_num(q)
         base = os.path.splitext(os.path.basename(tgt))[0] if tgt else ""
-        files[n] = os.path.basename(tgt)
+        rel = os.path.relpath(tgt, FOLDER_ABS) if tgt else ""
+        files[n] = rel
+        m = re.match(r"^(?:Cue\s*)?(\d+)", os.path.basename(tgt))
+        if tgt and (os.sep in rel or rel.startswith("..") or not m or int(m.group(1)) != n): o["file"] = rel
         if name and name != base: o["name"] = name
         if cont != "do_not_continue": o["cont"] = cont
         if notes: o["notes"] = notes
@@ -123,8 +129,8 @@ for s in seq:
     if s[0] == "fade" and s[2].get("secs") == fade_default: s[2].pop("secs")
 seq = [s[:2] if len(s) > 2 and not s[2] else s for s in seq]   # drop empty option dicts
 
-missing = [f for f in files.values() if not os.path.exists(os.path.join(FOLDER, f))]
-if missing: print(f"warn: {len(missing)} audio files not in {FOLDER}: {missing[:3]}…", file=sys.stderr)
+missing = [f for f in files.values() if not os.path.exists(os.path.join(FOLDER_ABS, f))]
+if missing: print(f"warn: {len(missing)} audio files not in {FOLDER_ABS}: {missing[:3]}…", file=sys.stderr)
 
 cfg = {"folder": FOLDER, "list": LIST, "prefix": PREFIX, "fade_seconds": fade_default, "sequence": seq}
 head = {k: v for k, v in cfg.items() if k != "sequence"}

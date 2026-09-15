@@ -1,9 +1,10 @@
 {
-  "folder": "/Users/zhabro/Documents/GitHub/2026threewordqlab/Act 3_ 今天小神有点忙",
+  "folder": ".",
   "list": "Act 3: 《今天小神有点忙》",
   "prefix": "3_",
   "fade_seconds": 3,
   "sequence": [
+    ["audio", 0, {"name": "0 报幕-小神（BGM 7s 进人声，27s，播完）", "notes": "本幕报幕：公用 BGM 第 7 秒进人声。播完自然结束，之后再 GO 本幕第一条音效。"}],
     ["audio", 1],
     ["audio", 2],
     ["audio", 3],

@@ -8,6 +8,7 @@ cfg json:
    "sequence": [                            # explicit steps, in cue-list order
      ["audio", 1],                          # Audio cue  -> q number <prefix>1
      ["audio", 1, {"name": "...", "notes": "...", "level": 3.5}],  # level = main fader dB (default 0)
+     ["audio", 101, {"file": "旁白/1.xxx.mp3", "name": "..."}],       # file = path relative to folder (or absolute)
      ["fade", 2],                           # Fade out (default secs) -> <prefix>2F
      ["fade", 2, {"secs": 1, "cont": "auto_continue", "suffix": "F", "name": "...", "notes": "..."}],
      ["fade", 2, {"suffix": "D", "level": -3.7, "stop": false, "secs": 2}],  # duck to -3.7dB, keep playing
@@ -17,7 +18,8 @@ cfg json:
      ["memo", 37, {"name": "...", "notes": "...", "suffix": "P"}] # -> <prefix>37P, does nothing on GO
    ]}
 
-Files in `folder` are '<N>-label.ext' or 'Cue<N> label.ext'; N is the audio cue number.
+Files in `folder` are '<N>-label.ext' or 'Cue<N> label.ext'; N is the audio cue number. "folder" may be
+relative to the json file ("." = same directory). A step with "file" bypasses the number scan.
 New cues are appended after the last existing cue of the list. Existing (placeholder) cues
 first get their q number blanked (otherwise QLab silently renumbers any colliding new cue),
 and are deleted after the build. Free QLab 5: Pause/Script/Network/Devamp cues are broken.
@@ -26,6 +28,8 @@ import os, re, subprocess, sys, json
 
 cfg = json.load(open(sys.argv[1]))
 FOLDER, LIST_NAME, PREFIX = cfg["folder"], cfg["list"], cfg["prefix"]
+if not os.path.isabs(FOLDER):   # "folder": "." = the json's own directory -> works on every collaborator's machine
+    FOLDER = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(sys.argv[1])), FOLDER))
 FADE_DEFAULT = cfg.get("fade_seconds", 1.0)
 FADES = {int(k): v for k, v in cfg.get("fades", {}).items()}
 LOOPS = set(cfg.get("loops", []))
@@ -139,7 +143,8 @@ def main():
             o = {"secs": step[2]} if kind == "fade" else {"cont": step[2]}
         select(last)
         if kind == "audio":
-            last = ids[n] = make_audio(n, fs[n], o)
+            if "file" not in o and n not in fs: raise SystemExit(f"no audio file numbered {n} in {FOLDER}")
+            last = ids[n] = make_audio(n, o.get("file") or fs[n], o)
         elif kind == "fade":
             last = make_fade(n, ids[n], o)
         elif kind == "memo":

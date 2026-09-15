@@ -1,9 +1,10 @@
 {
-  "folder": "/Users/aaron/Documents/喜剧节/Audio/Act 6_ 最后的太阳",
+  "folder": ".",
   "list": "Act 6:《最后的太阳》",
   "prefix": "6_",
   "fade_seconds": 3,
   "sequence": [
+    ["audio", 0, {"name": "0 报幕-太阳（BGM 7s 进人声，27s，播完）", "notes": "本幕报幕：公用 BGM 第 7 秒进人声。播完自然结束，之后再 GO 本幕第一条音效。"}],
     ["audio", 1, {"name": "1 开场白1（播完）"}],
     ["audio", 2, {"name": "2 开场白2（播完）", "notes": "等开场白1之后观众的笑声差不多了再 GO。"}],
     ["audio", 3, {"name": "3 神剑登场", "notes": "后羿：“出来吧，神力！”之后，黑衣人侧手翻上台。"}],

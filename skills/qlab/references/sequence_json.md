@@ -10,7 +10,7 @@
 
 ```json
 {
-  "folder": "/abs/path/Act 8_ 一幕成名2幕中无人",   // 音频所在文件夹，文件名 "<N>-xxx.mp3" 或 "Cue<N> xxx.mp3"
+  "folder": ".",                                      // 音频所在文件夹；"." = json 自己所在目录（推荐，换机器也能跑），也可写绝对路径。文件名 "<N>-xxx.mp3" 或 "Cue<N> xxx.mp3"
   "list":   "Act 8:《一幕成名2幕中无人》",          // 总工程里的 cue list q name，必须一字不差
   "prefix": "8_",                                     // q number 前缀：8_1、8_1F、8_37R…
   "fade_seconds": 3,                                  // 手动停的默认淡出秒数
@@ -22,7 +22,7 @@
 
 | 类型 | 生成的 cue | q number | 可选参数 |
 |---|---|---|---|
-| `audio` | Audio cue，文件 = folder 里编号 N 的那个 | `<prefix>N` | `name`（默认文件名）、`notes`、`cont`、`level`（主推子 dB，默认 0） |
+| `audio` | Audio cue，文件 = folder 里编号 N 的那个 | `<prefix>N` | `name`（默认文件名）、`notes`、`cont`、`level`（主推子 dB，默认 0）、`file`（相对 folder 的路径，给子文件夹里的音频用，此时 N 自己指定即可，如旁白用 101、102…） |
 | `fade` | Fade cue，目标 `<prefix>N`，默认淡到 −120 dB 并 stop target when done | `<prefix>N` + `suffix`（默认 `F`） | `secs`（默认 fade_seconds）、`cont`、`suffix`、`name`、`notes`、`level`（目标 dB，默认 −120）、`stop`（默认 true；`false` = 只压低不停） |
 | `start` | Start cue，目标 `<prefix>N`（暂停后续播） | `<prefix>N` + `suffix`（默认 `R`） | `cont`、`suffix`、`name`、`notes` |
 | `stop` | Stop cue | `<prefix>N` + `suffix`（默认 `S`） | 同上 |
@@ -50,6 +50,7 @@
 | 音量调到 X%（百分比） | `["audio", N, {"level": 20*log10(X/100)}]` | `level` 是主推子 dB，百分比是线性振幅：150% → `20*log10(1.5) ≈ 3.5`，50% → `20*log10(0.5) ≈ -6.0`。`dump_sequence.py` 会把手动在 QLab 里调过的 level 原样导出回 json，所以改完记得导出一次，别让下次重建把它冲掉 |
 
 其他约定：
+- **每幕第一步是报幕** `["audio", 0, {"name": "0 报幕-<剧名>（…播完）"}]`：把 `报幕/…/合成/报幕-<剧名>.mp3` 复制成该幕文件夹里的 `0 报幕-<剧名>.mp3`，编号 0 → `<prefix>0`。
 - `name` 用中文写清**这一 GO 干什么**（"停 26 → 接 27 揭秘（一次 GO）"），音控在 QLab 里看到的就是它。
 - `notes` 写操作提醒（按哪个键、为什么这条 GO 无动作）。
 - 文件名里的编号必须唯一；有两份同号音频先让用户二选一，`files()` 会直接报错。
