@@ -16,8 +16,8 @@
     ["audio", 10],
     ["audio", 11],
     ["audio", 12],
-    ["audio", 13],
-    ["audio", 14],
+    ["audio", 13, {"level": 3.5}],
+    ["audio", 14, {"level": 3.5}],
     ["audio", 15],
     ["audio", 16],
     ["audio", 17]
