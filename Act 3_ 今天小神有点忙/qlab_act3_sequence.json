@@ -16,8 +16,8 @@
     ["audio", 10],
     ["audio", 11],
     ["audio", 12],
-    ["audio", 13],
-    ["audio", 14],
+    ["audio", 13, {"notes": "音量 +3.5dB（≈150%），手动加大过；build_act_into_list.py 不会保留 level，重建后要重设"}],
+    ["audio", 14, {"notes": "音量 +3.5dB（≈150%），手动加大过；build_act_into_list.py 不会保留 level，重建后要重设"}],
     ["audio", 15],
     ["audio", 16],
     ["audio", 17]
