@@ -8,7 +8,7 @@ script OR edited by hand in the per-act workspace) so the act folder always carr
 qlab_actN_sequence.json that can rebuild the same list inside the festival-level workspace.
 
 Mapping (q number = <prefix><N><suffix>):
-  Audio            -> ["audio", N, {name, notes, cont?}]
+  Audio            -> ["audio", N, {name, notes, cont?, level?}]  (level = main fader dB, omitted if 0)
   Fade             -> ["fade", N_of_target, {secs, cont, suffix, name, notes}]
   Start/Stop/Pause -> ["start"/"stop"/"pause", N_of_target, {cont, suffix, name, notes}]
   Memo             -> ["memo", N, {suffix, name, notes}]          (N parsed from its own q number)
@@ -39,9 +39,13 @@ raw = osa(f'''set cl to first cue list whose q name is "{esc(LIST)}"
     try
       set nt to notes of c
     end try
+    set lvl to ""
     if t is "Audio" then
       try
         set tgt to POSIX path of (file target of c as alias)
+      end try
+      try
+        set lvl to (getLevel c row 0 column 0) as text
       end try
     else if t is in {{"Fade", "Start", "Stop", "Pause"}} then
       try
@@ -49,7 +53,7 @@ raw = osa(f'''set cl to first cue list whose q name is "{esc(LIST)}"
       end try
       if t is "Fade" then set dur to duration of c as text
     end if
-    set out to out & t & "{SEP}" & (q number of c) & "{SEP}" & (q name of c) & "{SEP}" & cont & "{SEP}" & tgt & "{SEP}" & dur & "{SEP}" & nt & linefeed
+    set out to out & t & "{SEP}" & (q number of c) & "{SEP}" & (q name of c) & "{SEP}" & cont & "{SEP}" & tgt & "{SEP}" & dur & "{SEP}" & nt & "{SEP}" & lvl & linefeed
   end repeat
   return out''')
 
@@ -62,7 +66,7 @@ def split_num(q):
 seq, files = [], {}
 for line in raw.split("\n"):
     if not line.strip(): continue
-    t, q, name, cont, tgt, dur, notes = line.split(SEP)
+    t, q, name, cont, tgt, dur, notes, lvl = line.split(SEP)
     notes = notes.replace("\r", "\n")
     o = {}
     if t == "Audio":
@@ -72,6 +76,9 @@ for line in raw.split("\n"):
         if name and name != base: o["name"] = name
         if cont != "do_not_continue": o["cont"] = cont
         if notes: o["notes"] = notes
+        if lvl:
+            lvlf = round(float(lvl.replace(",", ".")), 2)
+            if abs(lvlf) > 0.01: o["level"] = lvlf
         seq.append(["audio", n, o] if o else ["audio", n])
     elif t in ("Fade", "Start", "Stop", "Pause"):
         n, suf = split_num(q)

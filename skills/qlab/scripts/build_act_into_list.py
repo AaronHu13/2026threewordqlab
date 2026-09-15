@@ -7,7 +7,7 @@ cfg json:
    "fades": {"11": 3}, "loops": [12],       # used only when no "sequence"
    "sequence": [                            # explicit steps, in cue-list order
      ["audio", 1],                          # Audio cue  -> q number <prefix>1
-     ["audio", 1, {"name": "...", "notes": "..."}],
+     ["audio", 1, {"name": "...", "notes": "...", "level": 3.5}],  # level = main fader dB (default 0)
      ["fade", 2],                           # Fade out (default secs) -> <prefix>2F
      ["fade", 2, {"secs": 1, "cont": "auto_continue", "suffix": "F", "name": "...", "notes": "..."}],
      ["start", 37, {"cont": "do_not_continue", "name": "..."}],   # -> <prefix>37R
@@ -76,9 +76,15 @@ def make_audio(n, fname, o):
     uid = new_cue("Audio")
     ws(f'''set c to cue id "{uid}"
       set file target of c to (POSIX file "{esc(path)}")
-      {"set infinite loop of c to true" if n in LOOPS else ""}''')
+      {"set infinite loop of c to true" if n in LOOPS else ""}
+      {f"setLevel c row 0 column 0 db {o['level']}" if "level" in o else ""}''')
     set_common(uid, f"{PREFIX}{n}", name, o.get("cont", "do_not_continue"), o.get("notes"))
-    print(f"  audio {PREFIX}{n}: {name}"); return uid
+    if "level" in o:
+        got = float(ws(f'get getLevel (cue id "{uid}") row 0 column 0'))
+        if abs(got - o["level"]) > 0.05:
+            raise RuntimeError(f"level mismatch on {PREFIX}{n}: wanted {o['level']}dB, QLab gave {got}dB")
+    suffix = f" [level {o['level']:+g}dB]" if "level" in o else ""
+    print(f"  audio {PREFIX}{n}: {name}{suffix}"); return uid
 
 def make_fade(n, target, o):
     secs = o.get("secs", FADES.get(n, FADE_DEFAULT)); cont = o.get("cont", "do_not_continue")
