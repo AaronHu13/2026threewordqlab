@@ -132,7 +132,9 @@ seq = [s[:2] if len(s) > 2 and not s[2] else s for s in seq]   # drop empty opti
 missing = [f for f in files.values() if not os.path.exists(os.path.join(FOLDER_ABS, f))]
 if missing: print(f"warn: {len(missing)} audio files not in {FOLDER_ABS}: {missing[:3]}…", file=sys.stderr)
 
-cfg = {"folder": FOLDER, "list": LIST, "prefix": PREFIX, "fade_seconds": fade_default, "sequence": seq}
+# never bake a machine-specific absolute path into the json: if it sits inside the audio folder, write "."
+folder_out = "." if OUT and os.path.realpath(os.path.dirname(os.path.abspath(OUT))) == os.path.realpath(FOLDER_ABS) else FOLDER
+cfg = {"folder": folder_out, "list": LIST, "prefix": PREFIX, "fade_seconds": fade_default, "sequence": seq}
 head = {k: v for k, v in cfg.items() if k != "sequence"}
 lines = [json.dumps(s, ensure_ascii=False) for s in seq]          # one step per line, like the hand-written files
 text = json.dumps(head, ensure_ascii=False, indent=2)[:-2] + ',\n  "sequence": [\n    ' + ",\n    ".join(lines) + "\n  ]\n}"

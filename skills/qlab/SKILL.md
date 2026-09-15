@@ -50,7 +50,7 @@ tell application "System Events" to tell process "QLab" to ¬
 
 剧组给的音乐 cue 表都是纯文字（「26 搜捕队 —— 与 27 无缝衔接」「37 革命的大炮 —— 暂停后继续」…）。**先把它翻译成该幕音频文件夹里的 `qlab_actN_sequence.json`，再用它建 cue**；文字描述 → 步骤的对照表和完整格式在 `references/sequence_json.md`。
 
-**每一幕做完 QLab 之后，不管 cue 是脚本建的还是手工建/改的，都要保证文件夹里的 json 和 cue list 一致**：`python3 scripts/dump_sequence.py "<list 名>" "<prefix>" "<音频文件夹>" "<音频文件夹>/qlab_actN_sequence.json"` 会把前台工程里那个 cue list 反向导出成同格式 json（Act 8 实测 67 步和手写版一模一样）。这份 json 就是把「某一幕的独立工程」汇总进「戏剧节总工程」的载体：打开总工程，对着 json 跑一遍 `build_act_into_list.py`，不用手工跨工程复制 cue。json 是文本，能 git diff / 合并；`.qlab5` 不能，所以协作时以 json 为准。
+**每一幕做完 QLab 之后，不管 cue 是脚本建的还是手工建/改的，都要保证文件夹里的 json 和 cue list 一致**：`python3 scripts/dump_sequence.py "<list 名>" "<prefix>" "<音频文件夹>" "<音频文件夹>/qlab_actN_sequence.json"` 会把前台工程里那个 cue list 反向导出成同格式 json（json 落在音频文件夹里时 `folder` 自动写成 `"."`；**json 里永远不要出现 `/Users/xxx` 这种绝对路径**，否则别人机器上跑不了）（Act 8 实测 67 步和手写版一模一样）。这份 json 就是把「某一幕的独立工程」汇总进「戏剧节总工程」的载体：打开总工程，对着 json 跑一遍 `build_act_into_list.py`，不用手工跨工程复制 cue。json 是文本，能 git diff / 合并；`.qlab5` 不能，所以协作时以 json 为准。
 
 `scripts/build_workspace.py` 是一个能直接改的模板：扫文件夹里的 `Cue<N>：xxx.mp3` → 每个建 Audio cue → 紧跟一个 1 秒 Fade out cue，支持 loop 和交叠序列。**改 `FOLDER` 和 `main()` 里的编排就能用。**
 
