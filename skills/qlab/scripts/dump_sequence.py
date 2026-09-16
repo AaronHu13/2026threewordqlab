@@ -125,7 +125,7 @@ for line in raw.split("\n"):
         print(f"warn: skipping unsupported cue type {t} #{q}", file=sys.stderr)
 
 fades = [s[2].get("secs") for s in seq if s[0] == "fade"]
-fade_default = max(set(fades), key=fades.count) if fades else 3
+fade_default = max(set(fades), key=fades.count) if fades else 2
 for s in seq:
     if s[0] == "fade" and s[2].get("secs") == fade_default: s[2].pop("secs")
 seq = [s[:2] if len(s) > 2 and not s[2] else s for s in seq]   # drop empty option dicts

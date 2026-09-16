@@ -2,7 +2,7 @@
   "folder": ".",
   "list": "Act 3: 《今天小神有点忙》",
   "prefix": "3_",
-  "fade_seconds": 3,
+  "fade_seconds": 2,
   "sequence": [
     ["audio", 0, {"name": "0 报幕-小神（BGM 7s 进人声，27s，播完）", "notes": "本幕报幕：公用 BGM 第 7 秒进人声。播完自然结束，之后再 GO 本幕第一条音效。"}],
     ["audio", 1],
@@ -12,7 +12,9 @@
     ["audio", 5],
     ["audio", 6],
     ["audio", 7],
+    ["fade", 7, {"name": "手动停 7 sidapusa（2s 淡出）"}],
     ["audio", 8],
+    ["fade", 8, {"name": "手动停 8 dazhuanpan（2s 淡出）"}],
     ["audio", 9],
     ["audio", 10],
     ["audio", 11],
