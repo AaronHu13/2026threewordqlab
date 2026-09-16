@@ -8,8 +8,11 @@
     ["audio", 1],
     ["audio", 2],
     ["audio", 3],
+    ["fade", 3, {"name": "手动停 3 careless whisper（3s 淡出）"}],
     ["audio", 4],
     ["audio", 5],
-    ["audio", 6]
+    ["fade", 5, {"name": "手动停 5 常回家看看（3s 淡出）"}],
+    ["audio", 6],
+    ["fade", 6, {"name": "手动停 6 我记得（3s 淡出）"}]
   ]
 }
