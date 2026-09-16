@@ -6,6 +6,7 @@
   "sequence": [
     ["audio", 0, {"name": "0 报幕-马戏（BGM 7s 进人声，27s，播完）", "notes": "本幕报幕：公用 BGM 第 7 秒进人声。播完自然结束，之后再 GO 本幕第一条音效。"}],
     ["audio", 1],
+    ["fade", 1, {"name": "手动停 1 In car（2s 淡出）"}],
     ["audio", 2],
     ["audio", 3],
     ["audio", 4],
@@ -14,8 +15,10 @@
     ["audio", 7],
     ["audio", 8],
     ["audio", 9],
+    ["fade", 9, {"name": "手动停 9 long新闻（2s 淡出）"}],
     ["audio", 10],
     ["audio", 11],
-    ["audio", 12]
+    ["audio", 12],
+    ["fade", 12, {"name": "手动停 12 kickline（2s 淡出）"}]
   ]
 }
