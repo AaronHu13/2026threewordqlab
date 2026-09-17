@@ -16,6 +16,7 @@ Act 6_ 最后的太阳/
 Act 7_ 晚安承天寺/            # 2026-09-15 按导演 cts.qlab5 复刻 5 条音频 + 淡出；未引用的 wav 在子文件夹
 Act 8_ 一幕成名2幕中无人/
 报幕/                         # 8 个剧目的报幕音效：原录音、公用 BGM、合成成品（见其 README）
+前厅组/                       # 前厅组（检票 + 引导入场）工作说明，见其 README
 skills/                       # 做这套工程用到的 Claude Code skills（qlab / keynote / intro-mix）
 ```
 
