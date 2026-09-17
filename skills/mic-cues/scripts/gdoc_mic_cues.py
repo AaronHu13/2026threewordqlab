@@ -320,7 +320,7 @@ def cmd_apply(a):
         print(f'fixes applied: {len(cfg["fixes"])}')
     _, paras, _ = fetch(svc, doc_id)
     assert not any(is_state(p[2]) for p in paras)
-    states = run_states(paras, cfg['cues'], cfg['mics'], cfg['format'], {})
+    states = run_states(paras, cfg['cues'], cfg['mics'], cfg['format'], cfg['fixes'])   # fixes 已写入文档，但 cues.text 记的是改前文字，比对时仍需套一遍
     black = {'foregroundColor': {'color': {'rgbColor': {'red': 0, 'green': 0, 'blue': 0}}}, 'italic': False, 'bold': False}
     reqs = []
     for i, t, st, line in sorted(states, key=lambda x: -x[0]):
