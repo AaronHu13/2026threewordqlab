@@ -17,7 +17,17 @@ if args[:1] == ["--all"]:
 if not args: sys.exit(__doc__)
 
 def norm(cfg):
-    cfg = dict(cfg); cfg.pop("folder", None)
+    # canonical form: every fade carries an explicit "secs", so json and dump agree even when they
+    # picked different act-level fade_seconds defaults (dump uses the most common duration)
+    cfg = dict(cfg); cfg.pop("folder", None); default = cfg.pop("fade_seconds", 2)
+    seq = []
+    for s in cfg["sequence"]:
+        s = list(s)
+        if s[0] == "fade":
+            o = dict(s[2]) if len(s) > 2 else {}
+            o["secs"] = float(o.get("secs", default)); s = s[:2] + [o]
+        seq.append(s)
+    cfg["sequence"] = seq
     return json.dumps(cfg, ensure_ascii=False, indent=1, sort_keys=True)
 
 bad = 0

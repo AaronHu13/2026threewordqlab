@@ -11,8 +11,8 @@
     ["fade", 3, {"name": "手动停 3 careless whisper（2s 淡出）"}],
     ["audio", 4],
     ["audio", 5],
-    ["fade", 5, {"name": "手动停 5 常回家看看（2s 淡出）"}],
+    ["fade", 5, {"secs": 10, "name": "手动停 5 常回家看看（10s 淡出）"}],
     ["audio", 6],
-    ["fade", 6, {"name": "手动停 6 我记得（2s 淡出）"}]
+    ["fade", 6, {"secs": 10, "name": "手动停 6 我记得（10s 淡出）"}]
   ]
 }
